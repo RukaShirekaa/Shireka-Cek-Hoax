@@ -10,9 +10,25 @@ from dotenv import load_dotenv
 
 # 1. Setup konfigurasi
 load_dotenv()
-API_KEY = os.getenv("API_KEY") 
-client = genai.Client(api_key=API_KEY)
+API_KEY = os.getenv("API_KEY")
 app = Flask(__name__)
+
+# Lazily-initialized Gemini client — created on first use so the app can
+# start even when API_KEY is not set in the environment.
+_client = None
+
+def get_client():
+    global _client
+    if _client is not None:
+        return _client
+    key = os.getenv("API_KEY")
+    if not key:
+        raise ValueError(
+            "API_KEY environment variable is not set. "
+            "Please configure it before using the analyze endpoints."
+        )
+    _client = genai.Client(api_key=key)
+    return _client
 
 # 2. Prompt Dasar (Sudah dioptimalkan untuk output JSON)
 BASE_PROMPT_RULE = """
@@ -45,7 +61,7 @@ def analyze():
             
         prompt = f"{BASE_PROMPT_RULE}\n\nTeks: {data['text']}"
         
-        response = client.models.generate_content(
+        response = get_client().models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt,
             config=genai.types.GenerateContentConfig(
@@ -67,7 +83,7 @@ def analyze_image():
         image = Image.open(io.BytesIO(file.read()))
         
         # Menggunakan model yang mendukung gambar
-        response = client.models.generate_content(
+        response = get_client().models.generate_content(
             model="gemini-2.5-flash",
             contents=[BASE_PROMPT_RULE, image]
         )
