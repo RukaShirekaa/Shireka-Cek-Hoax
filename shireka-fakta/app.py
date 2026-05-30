@@ -5,7 +5,7 @@ import requests
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, jsonify
 from PIL import Image
-from google import genai
+import google.generativeai as genai  # ✅ Correct
 from dotenv import load_dotenv
 
 # 1. Setup konfigurasi
