@@ -1,1 +1,1 @@
-web: python shireka-fakta/app.py
+web: gunicorn shireka-fakta.app:app
