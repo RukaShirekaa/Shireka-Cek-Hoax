@@ -10,9 +10,11 @@ from dotenv import load_dotenv
 
 # 1. Setup konfigurasi
 load_dotenv()
-API_KEY = os.getenv("API_KEY") 
-client = genai.Client(api_key=API_KEY)
+API_KEY = os.getenv("API_KEY")
+genai.configure(api_key=API_KEY)
+model = genai.GenerativeModel("gemini-1.5-flash")
 app = Flask(__name__)
+
 
 # 2. Prompt Dasar (Sudah dioptimalkan untuk output JSON)
 BASE_PROMPT_RULE = """
@@ -45,19 +47,14 @@ def analyze():
             
         prompt = f"{BASE_PROMPT_RULE}\n\nTeks: {data['text']}"
         
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt,
-            config=genai.types.GenerateContentConfig(
-                tools=[{"google_search": {}}],
-            )
-        )
+        response = model.generate_content(prompt)
         
         # Bersihkan format JSON dari markdown (```json)
         raw_text = response.text.replace('```json', '').replace('```', '').strip()
         return jsonify(json.loads(raw_text))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 # RUTE ANALISIS GAMBAR
 @app.route('/analyze-image', methods=['POST'])
@@ -67,16 +64,13 @@ def analyze_image():
         image = Image.open(io.BytesIO(file.read()))
         
         # Menggunakan model yang mendukung gambar
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=[BASE_PROMPT_RULE, image]
-        )
+        response = model.generate_content([BASE_PROMPT_RULE, image])
         return jsonify(json.loads(response.text.replace('```json', '').replace('```', '').strip()))
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
 
+
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
