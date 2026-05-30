@@ -8,9 +8,10 @@ from PIL import Image
 import google.generativeai as genai  # ✅ Correct
 from dotenv import load_dotenv
 
-# 1. Setup konfigurasi
 load_dotenv()
-API_KEY = os.getenv("API_KEY")
+api_key = os.getenv('GEMINI_API_KEY')
+genai.configure(api_key=api_key)
+API_KEY = os.getenv("GEMINI_API_KEY")
 genai.configure(api_key=API_KEY)
 model = genai.GenerativeModel("gemini-1.5-flash")
 app = Flask(__name__)

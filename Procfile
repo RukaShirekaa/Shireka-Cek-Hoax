@@ -1,1 +1,1 @@
-web: gunicorn --chdir shireka-fakta app:app
+web: gunicorn --chdir shireka-fakta app:app 
