@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shireka Fakta - AI Hoax Detector</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Nunito:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+
+<body>
+
+    <!-- FLOATING BLOBS -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <!-- NAVBAR -->
+    <nav id="navbar">
+        <div class="nav-inner">
+            <div class="nav-logo">
+                <div class="logo-gem">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <span>Shireka<strong>Fakta</strong></span>
+            </div>
+            <div class="nav-links">
+                <div class="live-badge">
+                    <span class="ping"></span>
+                    AI Aktif
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-tag">✦ Validator Informasi Real-Time</div>
+        <h1 class="hero-title">
+            Kenali <span class="text-gradient">Kebenaran</span><br>
+            Sebelum Terlambat
+        </h1>
+        <p class="hero-sub">
+            Paste teks, unggah screenshot, atau masukkan link—<br>
+            biarkan AI yang memverifikasi untuk Anda.
+        </p>
+
+        <!-- TRUST PILLS -->
+        <div class="trust-pills">
+            <div class="pill"><i class="fa-solid fa-bolt"></i> Analisis &lt;3 detik</div>
+            <div class="pill"><i class="fa-solid fa-brain"></i> AI Multimodal</div>
+            <div class="pill"><i class="fa-solid fa-lock"></i> Data Privat</div>
+            <div class="pill"><i class="fa-solid fa-chart-simple"></i> Akurasi 98%</div>
+        </div>
+    </section>
+
+    <!-- MAIN CARD -->
+    <section class="main-section">
+        <div class="card main-card" id="inputCard">
+
+            <!-- TAB NAV -->
+            <div class="tab-row">
+                <button class="tab-btn active" onclick="switchTab('text-tab', this)" id="btn-text-tab">
+                    <i class="fa-solid fa-align-left"></i>
+                    <span>Teks</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('image-tab', this)" id="btn-image-tab">
+                    <i class="fa-solid fa-image"></i>
+                    <span>Screenshot</span>
+                </button>
+                <button class="tab-btn" onclick="switchTab('url-tab', this)" id="btn-url-tab">
+                    <i class="fa-solid fa-link"></i>
+                    <span>Link Berita</span>
+                </button>
+                <div class="tab-indicator" id="tabIndicator"></div>
+            </div>
+
+            <form id="analyzeForm" onsubmit="handleSubmit(event)">
+
+                <!-- TAB TEKS -->
+                <div id="text-tab" class="tab-content show">
+                    <div class="textarea-wrap">
+                        <textarea id="textInput" rows="6"
+                            placeholder="Tempelkan paragraf berita atau klaim yang ingin Anda verifikasi di sini..."></textarea>
+                        <div class="char-badge" id="charBadge">0 karakter</div>
+                    </div>
+                </div>
+
+                <!-- TAB GAMBAR -->
+                <div id="image-tab" class="tab-content">
+                    <div class="drop-zone" id="dropZone">
+                        <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)">
+                        <div id="uploadPlaceholder">
+                            <div class="drop-icon-wrap">
+                                <i class="fa-solid fa-cloud-arrow-up"></i>
+                            </div>
+                            <p class="drop-main">Klik atau seret screenshot ke sini</p>
+                            <p class="drop-sub">Mendukung PNG, JPG, JPEG</p>
+                        </div>
+                        <div id="imagePreviewContainer" class="hidden">
+                            <img id="imgPreview" alt="preview">
+                            <p id="fileName"></p>
+                            <button type="button" class="btn-remove-img" onclick="removeImage()">
+                                <i class="fa-solid fa-xmark"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB URL -->
+                <div id="url-tab" class="tab-content">
+                    <div class="url-field-wrap">
+                        <i class="fa-solid fa-globe url-icon"></i>
+                        <input type="url" id="urlInput" placeholder="https://contoh-berita.com/artikel-ini...">
+                        <div class="url-check" id="urlCheck"></div>
+                    </div>
+                    <p class="url-hint">Masukkan URL berita yang ingin Anda periksa kebenarannya.</p>
+                </div>
+
+                <!-- SUBMIT -->
+                <button type="submit" id="submitBtn" class="btn-submit">
+                    <span class="btn-text">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        Analisis Kebenaran
+                    </span>
+                    <span class="btn-shimmer"></span>
+                </button>
+
+            </form>
+        </div>
+
+        <!-- LOADING -->
+        <div class="card loading-card hidden" id="loadingArea">
+            <div class="loading-inner">
+                <div class="spinner-wrap">
+                    <div class="spinner-ring"></div>
+                    <div class="spinner-ring ring-2"></div>
+                    <i class="fa-solid fa-magnifying-glass spinner-icon"></i>
+                </div>
+                <h3 class="loading-title">Sedang Menganalisis...</h3>
+                <p class="loading-sub">AI sedang memverifikasi data dan mencari referensi</p>
+                <div class="loading-steps-list" id="loadingSteps">
+                    <div class="lstep active" id="step1"><i class="fa-solid fa-circle-notch fa-spin"></i> Membaca konten
+                    </div>
+                    <div class="lstep" id="step2"><i class="fa-regular fa-circle"></i> Mencocokkan database</div>
+                    <div class="lstep" id="step3"><i class="fa-regular fa-circle"></i> Menghasilkan laporan</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ERROR -->
+        <div class="error-card hidden" id="errorArea">
+            <div class="error-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+            <div class="error-body">
+                <h4>Gagal Menganalisis</h4>
+                <p id="errorText"></p>
+            </div>
+        </div>
+
+        <!-- RESULT -->
+        <div class="hidden" id="resultArea">
+
+            <!-- STATUS HERO -->
+            <div class="result-status-card" id="resultStatusCard">
+                <div class="status-left">
+                    <span class="result-kecil">Hasil Verifikasi</span>
+                    <div class="status-badge-big" id="badgeStatus">FAKTA</div>
+                </div>
+                <div class="status-right">
+                    <svg class="donut" width="90" height="90" viewBox="0 0 90 90">
+                        <circle class="donut-bg" cx="45" cy="45" r="36" />
+                        <circle class="donut-fill" id="donutFill" cx="45" cy="45" r="36" stroke-dasharray="226.2"
+                            stroke-dashoffset="226.2" />
+                    </svg>
+                    <div class="donut-label">
+                        <span id="txtConfidence" class="conf-num">0%</span>
+                        <span class="conf-sub">akurasi AI</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPLANATION -->
+            <div class="card result-body-card">
+                <div class="rb-section">
+                    <div class="rb-label"><i class="fa-solid fa-quote-left"></i> Penjelasan Edukatif</div>
+                    <p id="txtExplanation" class="rb-text"></p>
+                </div>
+
+                <div class="rb-divider"></div>
+
+                <div class="rb-section">
+                    <div class="rb-label"><i class="fa-solid fa-list-check"></i> Klaim Ditemukan</div>
+                    <ul id="listClaims" class="rb-list claims-list"></ul>
+                </div>
+
+                <div id="misleadingSection" class="hidden">
+                    <div class="rb-divider"></div>
+                    <div class="rb-section">
+                        <div class="rb-label warn"><i class="fa-solid fa-triangle-exclamation"></i> Unsur Manipulasi
+                        </div>
+                        <ul id="listMisleading" class="rb-list mislead-list"></ul>
+                    </div>
+                </div>
+
+                <div class="rb-divider"></div>
+
+                <div class="rb-section">
+                    <div class="rb-label"><i class="fa-solid fa-tags"></i> Topik Terkait</div>
+                    <div id="containerTags" class="tags-wrap"></div>
+                </div>
+
+                <!-- ACTIONS -->
+                <div class="result-actions">
+                    <button class="btn-action" onclick="resetForm()">
+                        <i class="fa-solid fa-rotate-left"></i> Cek Lagi
+                    </button>
+                    <button class="btn-action btn-share" onclick="shareResult()">
+                        <i class="fa-solid fa-share-nodes"></i> Bagikan
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 <strong>Shireka Fakta</strong> &mdash; Dibuat dengan dedikasi untuk informasi yang jernih.</p>
+    </footer>
+
+    <script src="/static/js/app.js"></script>
+</body>
+
+</html>

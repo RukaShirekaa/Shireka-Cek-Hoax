@@ -1,0 +1,13 @@
+.venv/
+venv/
+ENV/
+__pycache__/
+*.pyc
+
+# Mengabaikan semua file .env di folder mana pun
+.env
+shireka-fakta/.env
+
+*.log
+.DS_Store
+Thumbs.db

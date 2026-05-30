@@ -1,0 +1,1 @@
+web: python shireka-fakta/app.py
